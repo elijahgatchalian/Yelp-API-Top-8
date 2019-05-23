@@ -1,13 +1,14 @@
 #   Eli Gatchalian
 #   May 2, 2019
 
-import requests
-import urllib
 import tkinter as tk
+from requests import get
+from urllib import request
 from geocoder import ip
 from webbrowser import open_new_tab
 from PIL import ImageTk, Image
 from io import BytesIO
+from random import shuffle
 
 #api set-up
 YELP_API_KEY = '' #You can get a unique api key from yelp.com/developers
@@ -23,16 +24,18 @@ yelp_url = []
 
 #locating user's city
 city = ip('me').city
-
+if(city == ''):
+    city = 'Seattle'
+    
 def getBusinessInformation():
     parameters = {'location': city, 
-                  'limit': 20, #get 20 places, output max 8
+                  'limit': 50, #get 50 places, output max 8
                   'radius': 1000,
                   'categories': 'Restaurants',
                   'open_now': True,
                   'price': (1,2,3),
                   'sort_by': 'rating'}
-    response = requests.get(url = ENDPOINT, params = parameters, headers = HEADERS)
+    response = get(url = ENDPOINT, params = parameters, headers = HEADERS)
     business_dict = response.json()
     return business_dict
         
@@ -40,7 +43,7 @@ def onClick(pic):
     open_new_tab(yelp_url[pic])
 
 def createImage(url,i,j):
-    raw_data = urllib.request.urlopen(url).read()
+    raw_data = request.urlopen(url).read()
     img = Image.open(BytesIO(raw_data))
     img = img.resize((250,250), Image.ANTIALIAS)
     image = ImageTk.PhotoImage(img)
@@ -57,11 +60,13 @@ def addInfoToWindow(business_data):
     i = 0 #row
     j = 0 #column
     pic_num = 0
+    shuffle(business_data['businesses'])
+    
     for biz in business_data['businesses']:
-        #Should include 8 businesses if they have valid image and yelp url
+        #Should include 8 businesses only if they have valid image and yelp url
         if (pic_num > 7):
-            return
-        if(biz['image_url'] == '' or biz['url'] == '' or pic_num > 7):
+            break
+        if(biz['image_url'] == '' or biz['url'] == ''):
             continue 
         
         createImage(biz['image_url'],i,j)
