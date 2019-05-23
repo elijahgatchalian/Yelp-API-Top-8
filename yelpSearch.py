@@ -26,7 +26,7 @@ yelp_url = []
 city = ip('me').city
 if(city == ''):
     city = 'Seattle'
-    
+
 def getBusinessInformation():
     parameters = {'location': city, 
                   'limit': 50, #get 50 places, output max 8
@@ -57,8 +57,8 @@ def createButton(name, url, i, j, pic_num):
     yelp_url.append(url)
 
 def addInfoToWindow(business_data):
-    i = 0 #row
-    j = 0 #column
+    row = 0
+    column = 0
     pic_num = 0
     shuffle(business_data['businesses'])
     
@@ -69,15 +69,15 @@ def addInfoToWindow(business_data):
         if(biz['image_url'] == '' or biz['url'] == ''):
             continue 
         
-        createImage(biz['image_url'],i,j)
-        createButton(biz['name'],biz['url'],i,j,pic_num)
+        createImage(biz['image_url'],row,column)
+        createButton(biz['name'],biz['url'],row,column,pic_num)
         pic_num += 1
         
-        if(j < 3):
-            j += 1
+        if(column < 3):
+            column += 1
         else:
-            j = 0
-            i += 1
+            column = 0
+            row += 1
 
 def main():
     addInfoToWindow(getBusinessInformation())
